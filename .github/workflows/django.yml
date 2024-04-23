@@ -23,7 +23,9 @@ jobs:
         pip install -r Taskify/requirements.txt
     - name: Run Tests
       run: |
-        python manage.py Taskify/test
+        pip freeze
+        python Taskify/manage.py test Task
+        python Taskify/manage.py test User
     - name: linting
       uses: programmingwithalex/pylinter@main
       with:
