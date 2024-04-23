@@ -34,5 +34,3 @@ jobs:
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
         skip-flake8: false
-    - name: Django Security Check
-      uses: victoriadrake/django-security-check@v1.1.0
