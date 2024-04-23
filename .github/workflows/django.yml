@@ -36,9 +36,3 @@ jobs:
         skip-flake8: false
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
-    - name: Checkout action
-      uses: actions/checkout@v2
-    - name: Python Django Coverage GitHub Action
-      uses: dc740/django-coveragepy-github-action@0.9
-      with:
-        django-app: 'Taskify'
