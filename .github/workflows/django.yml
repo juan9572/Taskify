@@ -23,6 +23,7 @@ jobs:
         pip install -r Taskify/requirements.txt
     - name: Run Tests
       run: |
+        pwd
         python Taskify/manage.py test
     - name: linting
       uses: programmingwithalex/pylinter@main
@@ -32,6 +33,7 @@ jobs:
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
         mypy-ignore-dirs-files: 'Taskify/Taskify/settings.py'
+        skip-flake8: false
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
     - name: Python Django Coverage GitHub Action
