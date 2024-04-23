@@ -1,7 +1,8 @@
-from ..models import Task
-from django.test import TestCase
-from django.db.utils import IntegrityError
 from django.contrib.auth.models import User
+from django.db.utils import IntegrityError
+from django.test import TestCase
+
+from ..models import Task
 
 
 class TaskModelTest(TestCase):

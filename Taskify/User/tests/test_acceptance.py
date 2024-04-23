@@ -1,7 +1,8 @@
 import os
-from django.test import LiveServerTestCase
+
 from django.contrib.auth.models import User
-from playwright.sync_api import sync_playwright, expect
+from django.test import LiveServerTestCase
+from playwright.sync_api import expect, sync_playwright
 
 
 class UserAuthenticationTest(LiveServerTestCase):
