@@ -4,6 +4,7 @@ from django.views.generic.list import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+
 class TaskList(LoginRequiredMixin, ListView):
     model = Task
     context_object_name = 'tasks'
@@ -23,6 +24,7 @@ class TaskList(LoginRequiredMixin, ListView):
 
         return context
 
+
 class TaskCreate(LoginRequiredMixin, CreateView):
     model = Task
     fields = ['title', 'description', 'complete']
@@ -32,6 +34,7 @@ class TaskCreate(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         return super(TaskCreate, self).form_valid(form)
 
+
 class TaskUpdate(LoginRequiredMixin, UpdateView):
     model = Task
     fields = ['title', 'description', 'complete']
@@ -39,6 +42,7 @@ class TaskUpdate(LoginRequiredMixin, UpdateView):
 
     def get_queryset(self):
         return Task.objects.filter(user=self.request.user)
+
 
 class TaskDelete(LoginRequiredMixin, DeleteView):
     model = Task

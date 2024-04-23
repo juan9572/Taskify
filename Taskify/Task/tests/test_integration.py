@@ -25,9 +25,11 @@ class TaskIntegrationTest(TestCase):
     def test_task_create_view(self):
         response = self.client.post(
             reverse("task-create"),
-            {"title": "New Task",
-            "description": "New Description",
-            "complete": False},
+            {
+                "title": "New Task",
+                "description": "New Description",
+                "complete": False
+            },
         )
         self.assertEqual(response.status_code, 302)
         self.assertTrue(Task.objects.filter(title="New Task").exists())
@@ -55,9 +57,11 @@ class TaskIntegrationTest(TestCase):
     def test_task_create_invalid_data(self):
         self.client.post(
             reverse("task-create"),
-            {"title": "",
-            "description": "New Description",
-            "complete": False},
+            {
+                "title": "",
+                "description": "New Description",
+                "complete": False
+            },
         )
         self.assertFalse(Task.objects.filter(title="").exists())
 

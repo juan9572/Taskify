@@ -96,6 +96,6 @@ class TaskAcceptanceTest(LiveServerTestCase):
         # Logout
         selenium.find_element(By.CLASS_NAME, "logout-link").click()
         self.assertTrue(
-            WebDriverWait(selenium, 10)\
-                .until(EC.url_contains("/user/login/"))
+            WebDriverWait(selenium, 10)
+            .until(EC.url_contains("/user/login/"))
         )
