@@ -30,7 +30,9 @@ class UserAuthenticationTest(LiveServerTestCase):
         page.get_by_role("button", name="Registrarse").click()
         # Verify Successful Registration
         expect(page.locator("h1")).to_contain_text("Hola Newuser")
-        expect(page.get_by_role("button", name="Cerrar sesión")).to_be_visible()
+        expect(page.get_by_role(
+            "button", name="Cerrar sesión"
+        )).to_be_visible()
         user_exists = User.objects.filter(username="newuser").exists()
         self.assertTrue(user_exists)
 
@@ -46,4 +48,6 @@ class UserAuthenticationTest(LiveServerTestCase):
         page.get_by_role("button", name="Logueate").click()
         # Verify Successful Login
         expect(page.locator("h1")).to_contain_text("Hola Newuser")
-        expect(page.get_by_role("button", name="Cerrar sesión")).to_be_visible()
+        expect(page.get_by_role(
+            "button", name="Cerrar sesión"
+        )).to_be_visible()
