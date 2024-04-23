@@ -24,7 +24,8 @@ jobs:
     - name: Run Tests
       run: |
         pwd
-        python Taskify/manage.py test
+        ls
+        python manage.py test
     - name: linting
       uses: programmingwithalex/pylinter@main
       with:
@@ -32,7 +33,7 @@ jobs:
         flake8-flags: '--count --show-source --statistics'
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
-        mypy-ignore-dirs-files: 'Taskify/Taskify/settings.py'
+        mypy-ignore-dirs-files: 'Taskify/settings.py'
         skip-flake8: false
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
