@@ -26,6 +26,12 @@ jobs:
         python Taskify/manage.py test
     - name: linting
       uses: programmingwithalex/pylinter@main
+      with:
+        python-root: '.'
+        flake8-flags: '--count --show-source --statistics'
+        mypy-flags: '--ignore-missing-imports'
+        fail-on-isort: true
+        mypy-ignore-dirs-files: 'Taskify\Taskify\settings.py'
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
     - name: Python Django Coverage GitHub Action
