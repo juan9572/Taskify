@@ -8,7 +8,6 @@ from selenium.webdriver.firefox.webdriver import WebDriver
 
 
 class UserAuthenticationTest(LiveServerTestCase):
-
     @classmethod
     def setUpClass(cls):
         super(UserAuthenticationTest, cls).setUpClass()
@@ -21,7 +20,6 @@ class UserAuthenticationTest(LiveServerTestCase):
 
     def setUp(self):
         self.selenium.get(self.live_server_url)
-
 
     def test_user_registration(self):
         selenium = self.selenium
@@ -39,14 +37,28 @@ class UserAuthenticationTest(LiveServerTestCase):
         password2_field.send_keys(Keys.RETURN)
 
         # Verify Successful Registration
-        self.assertTrue(WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Hola Newuser')]"))))
-        self.assertTrue(WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "logout-link"))))
+        self.assertTrue(
+            WebDriverWait(selenium, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[contains(text(), 'Hola Newuser')]")
+                )
+            )
+        )
+        self.assertTrue(
+            WebDriverWait(selenium, 10).until(
+                EC.presence_of_element_located(
+                    (By.CLASS_NAME, "logout-link")
+                )
+            )
+        )
         user_exists = User.objects.filter(username="newuser").exists()
         self.assertTrue(user_exists)
 
     def test_user_login(self):
         selenium = self.selenium
-        User.objects.create_user(username='newuser', password='newpasswordHiperSecret123')
+        User.objects.create_user(
+            username="newuser", password="newpasswordHiperSecret123"
+        )
 
         # Login
         username_field = selenium.find_element(By.NAME, "username")
@@ -56,5 +68,17 @@ class UserAuthenticationTest(LiveServerTestCase):
         password_field.send_keys(Keys.RETURN)
 
         # Verify Successful Login
-        self.assertTrue(WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.XPATH, "//*[contains(text(), 'Hola Newuser')]"))))
-        self.assertTrue(WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "logout-link"))))
+        self.assertTrue(
+            WebDriverWait(selenium, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[contains(text(), 'Hola Newuser')]")
+                )
+            )
+        )
+        self.assertTrue(
+            WebDriverWait(selenium, 10).until(
+                EC.presence_of_element_located(
+                    (By.CLASS_NAME, "logout-link")
+                )
+            )
+        )
