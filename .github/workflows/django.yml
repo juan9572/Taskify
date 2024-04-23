@@ -19,6 +19,8 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       run: |
+        python -m venv env
+        . venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r Taskify/requirements.txt
     - name: Run Tests
@@ -31,7 +33,7 @@ jobs:
         flake8-flags: '--count --show-source --statistics'
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
-        mypy-ignore-dirs-files: 'Taskify\Taskify\settings.py'
+        mypy-ignore-dirs-files: 'Taskify/Taskify/settings.py'
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
     - name: Python Django Coverage GitHub Action
