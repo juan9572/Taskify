@@ -23,9 +23,7 @@ jobs:
         pip install -r Taskify/requirements.txt
     - name: Run Tests
       run: |
-        pwd
-        ls
-        python manage.py test
+        python manage.py Taskify/test
     - name: linting
       uses: programmingwithalex/pylinter@main
       with:
