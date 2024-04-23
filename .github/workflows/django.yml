@@ -30,7 +30,7 @@ jobs:
       uses: programmingwithalex/pylinter@main
       with:
         python-root: '.'
-        flake8-flags: '--count --show-source --statistics --ignore Taskify/Taskify/settings.py''
+        flake8-flags: '--count --show-source --statistics --ignore Taskify/Taskify/settings.py'
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
         skip-flake8: false
