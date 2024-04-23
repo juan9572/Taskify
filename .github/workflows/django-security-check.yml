@@ -1,0 +1,19 @@
+name: Django Security Check
+
+needs: install-deps
+
+jobs:
+  django-security-check:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.9]
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          path: .
+
+      - name: Django Security Check
+        uses: victoriadrake/django-security-check@v1.1.0
