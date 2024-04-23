@@ -1,101 +1,66 @@
+import os
 from django.test import LiveServerTestCase
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from django.contrib.auth.models import User
-from selenium.webdriver.chrome.webdriver import WebDriver
+from playwright.sync_api import sync_playwright, expect
 
 
 class TaskAcceptanceTest(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
+        os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
         super(TaskAcceptanceTest, cls).setUpClass()
-        cls.selenium = WebDriver()
+        cls.playwright = sync_playwright().start()
+        cls.browser = cls.playwright.chromium.launch()
+
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
         super(TaskAcceptanceTest, cls).tearDownClass()
+        cls.browser.close()
+        cls.playwright.stop()
 
-    def setUp(self):
-        # Login
-        self.user = User.objects.create_user(
-            username="testuser", password="12345"
-        )
-        self.selenium.get(self.live_server_url)
-        username_field = self.selenium.find_element(By.NAME, "username")
-        password_field = self.selenium.find_element(By.NAME, "password")
-        username_field.send_keys("testuser")
-        password_field.send_keys("12345")
-        password_field.send_keys(Keys.RETURN)
-        WebDriverWait(self.selenium, 10)\
-            .until(EC.url_to_be(self.live_server_url + "/"))
 
     def test_task_crud(self):
-        selenium = self.selenium
+        self.user = User.objects.create_user(
+            username="testuser", password="12345passwordHiper"
+        )
+        page = self.browser.new_page()
+        page.goto(self.live_server_url)
 
-        # Navigate to Task List
-        selenium.get(self.live_server_url)
+        page.locator("#id_username").fill("testuser")
+        page.locator("#id_password").fill("12345passwordHiper")
+        page.get_by_role("button", name="Logueate").click()
+        expect(page.get_by_role("heading", name="Hola Testuser")).to_be_visible()
+        page.get_by_role("link", name="tarea").click()
 
         # Create Task
-        selenium.find_element(By.ID, "add-link").click()
-        title_field = selenium.find_element(By.NAME, "title")
-        description_field = selenium.find_element(By.NAME, "description")
-        title_field.send_keys("New Task")
-        description_field.send_keys("New Description")
-        selenium.find_element(By.CLASS_NAME, "button").click()
+        page.locator("#id_title").fill("New Task")
+        page.locator("#id_description").fill("New Description")
+        page.get_by_role("button", name="Guardar").click()
 
         # Verify Task Created
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[contains(text(), 'New Task')]")
-                )
-            )
-        )
+        expect(page.locator("#tasklist")).to_contain_text("New Task")
+        expect(page.locator("h3")).to_contain_text("Tienes 1 tarea incompleta")
 
         # Update Task
-        selenium.find_element(By.LINK_TEXT, "New Task").click()
-        title_field = selenium.find_element(By.NAME, "title")
-        description_field = selenium.find_element(By.NAME, "description")
-        title_field.clear()
-        title_field.send_keys("Updated Task")
-        description_field.clear()
-        description_field.send_keys("Updated Description")
-        selenium.find_element(By.NAME, "complete").click()
-        selenium.find_element(By.CLASS_NAME, "button").click()
+        page.get_by_role("link", name="New Task").click()
+        page.locator("#id_title").fill("Updated Task")
+        page.locator("#id_description").fill("Updated Description")
+        page.locator("#id_complete").check()
+        page.get_by_role("button", name="Guardar").click()
 
         # Verify Task Updated
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[contains(text(), 'Updated Task')]")
-                )
-            )
-        )
+        expect(page.locator("h3")).to_contain_text("Tienes 0 tareas incompletas")
+        expect(page.locator("#tasklist")).to_contain_text("Updated Task")
 
         # Delete Task
-        selenium.find_element(By.LINK_TEXT, "×").click()
-        selenium.find_element(By.CLASS_NAME, "button").click()
+        page.get_by_role("link", name="×").click()
+        page.get_by_role("button", name="Eliminar").click()
 
         # Verify Task Deleted
-        no_tasks_message = "No hay tareas nuevas."
-        add_task_link_text = "Crea una nueva "
-        add_task_link_element = selenium.find_element(
-            By.XPATH, f"//*[contains(text(), '{add_task_link_text}')]"
-        )
-        no_tasks_element = WebDriverWait(selenium, 10).until(
-            EC.presence_of_element_located(
-                (By.XPATH, f"//*[contains(text(), '{no_tasks_message}')]")
-            )
-        )
-        self.assertTrue(no_tasks_element.is_displayed())
-        self.assertTrue(add_task_link_element.is_displayed())
+        expect(page.locator("#tasklist")).to_contain_text("No hay tareas nuevas.")
+        expect(page.locator("#tasklist")).to_contain_text("Crea una nueva tarea !")
 
         # Logout
-        selenium.find_element(By.CLASS_NAME, "logout-link").click()
-        self.assertTrue(
-            WebDriverWait(selenium, 10)
-            .until(EC.url_contains("/user/login/"))
-        )
+        page.get_by_role("button", name="Cerrar sesión").click()
+        page.close()

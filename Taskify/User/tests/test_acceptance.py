@@ -1,84 +1,54 @@
+import os
 from django.test import LiveServerTestCase
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 from django.contrib.auth.models import User
-from selenium.webdriver.chrome.webdriver import WebDriver
+from playwright.sync_api import sync_playwright, expect
 
 
 class UserAuthenticationTest(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
+        os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
         super(UserAuthenticationTest, cls).setUpClass()
-        cls.selenium = WebDriver()
+        cls.playwright = sync_playwright().start()
+        cls.browser = cls.playwright.chromium.launch()
 
     @classmethod
     def tearDownClass(cls):
-        cls.selenium.quit()
         super(UserAuthenticationTest, cls).tearDownClass()
+        cls.browser.close()
+        cls.playwright.stop()
 
-    def setUp(self):
-        self.selenium.get(self.live_server_url)
 
     def test_user_registration(self):
-        selenium = self.selenium
-
+        page = self.browser.new_page()
+        page.goto(self.live_server_url)
         # Navigate to Registration Page
-        selenium.find_element(By.LINK_TEXT, "Registrate").click()
+        page.get_by_role("link", name="Registrate").click()
 
         # Register
-        username_field = selenium.find_element(By.NAME, "username")
-        password1_field = selenium.find_element(By.NAME, "password1")
-        password2_field = selenium.find_element(By.NAME, "password2")
-        username_field.send_keys("newuser")
-        password1_field.send_keys("newpasswordHiperSecret123")
-        password2_field.send_keys("newpasswordHiperSecret123")
-        password2_field.send_keys(Keys.RETURN)
+        page.locator("#id_username").fill("newuser")
+        page.locator("#id_password1").fill("newpasswordHiperSecret123")
+        page.locator("#id_password2").fill("newpasswordHiperSecret123")
+        page.get_by_role("button", name="Registrarse").click()
 
         # Verify Successful Registration
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[contains(text(), 'Hola Newuser')]")
-                )
-            )
-        )
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.CLASS_NAME, "logout-link")
-                )
-            )
-        )
+        expect(page.locator("h1")).to_contain_text("Hola Newuser")
+        expect(page.get_by_role("button", name="Cerrar sesión")).to_be_visible()
         user_exists = User.objects.filter(username="newuser").exists()
         self.assertTrue(user_exists)
 
     def test_user_login(self):
-        selenium = self.selenium
+        page = self.browser.new_page()
+        page.goto(self.live_server_url)
         User.objects.create_user(
             username="newuser", password="newpasswordHiperSecret123"
         )
 
         # Login
-        username_field = selenium.find_element(By.NAME, "username")
-        password_field = selenium.find_element(By.NAME, "password")
-        username_field.send_keys("newuser")
-        password_field.send_keys("newpasswordHiperSecret123")
-        password_field.send_keys(Keys.RETURN)
+        page.locator("#id_username").fill("newuser")
+        page.locator("#id_password").fill("newpasswordHiperSecret123")
+        page.get_by_role("button", name="Logueate").click()
 
         # Verify Successful Login
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.XPATH, "//*[contains(text(), 'Hola Newuser')]")
-                )
-            )
-        )
-        self.assertTrue(
-            WebDriverWait(selenium, 10).until(
-                EC.presence_of_element_located(
-                    (By.CLASS_NAME, "logout-link")
-                )
-            )
-        )
+        expect(page.locator("h1")).to_contain_text("Hola Newuser")
+        expect(page.get_by_role("button", name="Cerrar sesión")).to_be_visible()
