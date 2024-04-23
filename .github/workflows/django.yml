@@ -30,10 +30,9 @@ jobs:
       uses: programmingwithalex/pylinter@main
       with:
         python-root: '.'
-        flake8-flags: '--count --show-source --statistics'
+        flake8-flags: '--count --show-source --statistics --ignore Taskify/Taskify/settings.py''
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
-        mypy-ignore-dirs-files: 'Taskify/settings.py'
         skip-flake8: false
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
