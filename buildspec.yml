@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    PYTHONPATH: "$PYTHONPATH:$CODEBUILD_SRC_DIR"
+
+phases:
+  pre_build:
+    commands:
+      - echo "Installing system dependencies..."
+      - apt-get update && apt-get install -y zip
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - python -m pip install --upgrade pip
+      - pip install -r requirements.txt
+      - playwright install
+  build:
+    commands:
+      - python manage.py migrate --noinput
+      - python manage.py collectstatic --noinput
+      - python manage.py test -v 2
+  post_build:
+    commands:
+      - echo "Running linting..."
+      - flake8 --count --show-source --statistics --exclude=Taskify/settings.py .
+      - mypy --ignore-missing-imports .
+      - echo "Creating deployment artifact..."
+      - zip -r deployment_package.zip .
+      - mv deployment_package.zip $CODEBUILD_SRC_DIR/
