@@ -24,6 +24,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Run Tests
       run: python manage.py test -v 2
     - name: linting
