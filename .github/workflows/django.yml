@@ -41,6 +41,7 @@ jobs:
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
+    environment: Taskify-enviroment
     steps:
       - name: Checkout
         uses: actions/checkout@v4
