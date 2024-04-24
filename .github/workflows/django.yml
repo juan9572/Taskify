@@ -20,17 +20,19 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r Taskify/requirements.txt
+        pip install -r requirements.txt
         playwright install
     - name: Run Tests
-      run: |
-        cd Taskify
-        python manage.py test
+      run: python manage.py test -v 2
     - name: linting
       uses: programmingwithalex/pylinter@main
       with:
         python-root: '.'
-        flake8-flags: '--count --show-source --statistics --exclude=Taskify/Taskify/settings.py'
+        flake8-flags: '--count --show-source --statistics --exclude=Taskify/settings.py'
         mypy-flags: '--ignore-missing-imports'
         fail-on-isort: true
         skip-flake8: false
+    - name: Django Security Check
+      uses: victoriadrake/django-security-check@v1.1.0
+    - name: Python Django Coverage GitHub Action
+      uses: dc740/django-coveragepy-github-action@0.9
