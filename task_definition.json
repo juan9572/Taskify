@@ -2,6 +2,8 @@
     "executionRoleArn": "arn:aws:iam::460814825580:role/Taskify-iam-role-ecs-task",
     "containerDefinitions": [{
       "name": "taskify_app",
+      "memory": "4096",
+      "cpu": "2048",
       "image": "dkr.ecr.us-east-1.amazonaws.com/taskify-repository-images",
       "essential": true,
       "portMappings": [{
