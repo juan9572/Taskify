@@ -1,11 +1,9 @@
-name: Django CI
+name: Django CI/CD
 on:
-  push:
-    branches: [ "develop" ]
   pull_request:
     branches: [ "main" ]
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -34,3 +32,29 @@ jobs:
         skip-flake8: false
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Django aws eb deployment
+      uses: joel-hanson/django-aws-eb-deploy@V1.1
+      with:
+        python_version: ${{ matrix.python_version }}
+        aws_access_key_id: ${{ secrets.aws_access_key_id }}
+        aws_secret_access_key: ${{ secrets.aws_secret_access_key }}
+        deploy: true
+        unit_testing: true
+        min_coverage: 10
+    - name: Coverage report artifacts
+      uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: coverage report
+        path: output/coverage_report.txt
+    - name: Coverage report artifacts if failed
+      uses: actions/upload-artifact@v1
+      if: failure()
+      with:
+        name: coverage report if failed
+        path: output/coverage_report.txt
