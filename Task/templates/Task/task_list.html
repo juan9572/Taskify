@@ -1,0 +1,55 @@
+{% extends 'base.html' %} {% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+<div class="header-bar">
+    <div>
+        <h1>Hola {{request.user|title}}</h1>
+        <h3 style="margin:0">Tienes <i>{{count}}</i> tarea{{ count|pluralize:"s" }} incompleta{{ count|pluralize:"s" }}</h3>
+    </div>
+
+    {% if request.user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="post">
+        {% csrf_token %}
+        <button class="logout-link" type="submit">Cerrar sesión</button>
+    </form>
+    {% else %}
+    <a href="{% url 'login' %}">Logueate</a> {% endif %}
+</div>
+
+
+<div id="search-add-wrapper">
+    <form method="GET" style="display: flex;">
+        <input type='text' name='search-area' placeholder="Buscar tarea..." value="{{search_input}}">
+        <input class="button" type="submit" value='Buscar'>
+    </form>
+    {% if tasks|length > 0 %}
+    <a id="add-link" href="{% url 'task-create' %}">&#x2b;</a>
+    {% endif %}
+</div>
+
+
+<div id="tasklist" class="task-items-wrapper">
+    {% for task in tasks %}
+    <div class="task-wrapper" data-position="{{task.pk}}">
+        <div class="task-title">
+            {% if task.complete %}
+            <div class="task-complete-icon"></div>
+            <i><s><a href="{% url 'task-update' task.id %}">{{task}}</a></s></i> {% else %}
+            <div class="task-incomplete-icon"></div>
+            <a href="{% url 'task-update' task.id %}">{{task}}</a> {% endif %}
+        </div>
+        <div class="task-controls">
+            <a class="delete-link" href="{% url 'task-delete' task.id %}">&#215;</a>
+        </div>
+    </div>
+
+    {% empty %}
+    <div style="text-align: center; padding-bottom: 10px; line-height: 1em;">
+        <h3>No hay tareas nuevas.</h3>
+        <h3>Crea una nueva <a id="add-link" style="text-decoration: none; color: #357be5;" href="{% url 'task-create' %}">tarea</a> ! </h3>
+    </div>
+    {% endfor %}
+</div>
+
+
+{% endblock content %}

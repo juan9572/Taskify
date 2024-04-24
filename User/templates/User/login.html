@@ -1,0 +1,21 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="header-bar">
+    <h1>Logueate</h1>
+</div>
+
+<div class="card-body">
+    <form method="POST">
+        {% csrf_token %}
+        <label>Nombre de usuario</label>
+        {{form.username}}
+
+        <label>Contraseña</label>
+        {{form.password}}
+
+        <input style="margin-top:10px ;" class="button" type="submit" value="Logueate">
+    </form>
+    <p>No tienes cuenta? <a href="{% url 'register' %}">Registrate</a></p>
+</div>
+
+{% endblock content %}
