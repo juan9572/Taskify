@@ -3,7 +3,6 @@
     "containerDefinitions": [{
       "name": "taskify_app",
       "image": "dkr.ecr.us-east-1.amazonaws.com/taskify-repository-images",
-      "memory": "4096",
       "essential": true,
       "portMappings": [{
         "containerPort": 80,
@@ -16,5 +15,5 @@
     "placementConstraints": [],
     "family": "application-stack",
     "memory": "4096",
-    "cpu": "1024"
+    "cpu": "2048"
   }
