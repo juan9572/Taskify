@@ -2,6 +2,13 @@ name: Django CI/CD
 on:
   pull_request:
     branches: [ "main" ]
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: taskify-repository-images
+  ECS_SERVICE: Taskify-dev-cluster-service
+  ECS_CLUSTER: Taskify-dev-cluster
+  ECS_TASK_DEFINITION: ./task_definition.json
+  CONTAINER_NAME: taskify_app
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -32,13 +39,6 @@ jobs:
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
   deploy:
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPOSITORY: taskify-repository-images
-      ECS_SERVICE: Taskify-dev-cluster-service
-      ECS_CLUSTER: Taskify-dev-cluster
-      ECS_TASK_DEFINITION: ./task_definition.json
-      CONTAINER_NAME: taskify_app
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
