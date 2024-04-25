@@ -1,21 +1,23 @@
 {
-    "executionRoleArn": "arn:aws:iam::460814825580:role/Taskify-iam-role-ecs-task",
-    "containerDefinitions": [{
+  "executionRoleArn": "arn:aws:iam::460814825580:role/Taskify-iam-role-ecs-task",
+  "containerDefinitions": [
+    {
       "name": "taskify_app",
-      "memory": "4096",
-      "cpu": "2048",
+      "cpu": 256,
+      "memory": 512,
       "image": "dkr.ecr.us-east-1.amazonaws.com/taskify-repository-images",
       "essential": true,
-      "portMappings": [{
-        "containerPort": 80,
-        "protocol": "tcp"
-      }]
-    }],
-    "volumes": [],
-    "requiresCompatibilities": ["FARGATE"],
-    "networkMode": "awsvpc",
-    "placementConstraints": [],
-    "family": "application-stack",
-    "memory": "4096",
-    "cpu": "2048"
-  }
+      "portMappings": [
+        {
+          "containerPort": 80
+        }
+      ]
+    }
+  ],
+  "volumes": [],
+  "requiresCompatibilities": [
+    "EC2"
+  ],
+  "placementConstraints": [],
+  "family": "application-stack"
+}
