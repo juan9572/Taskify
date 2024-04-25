@@ -10,7 +10,19 @@ env:
   ECS_TASK_DEFINITION: ./task_definition.json
   CONTAINER_NAME: taskify_app
 jobs:
+  check-linting:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: linting
+      uses: programmingwithalex/pylinter@main
+      with:
+        flake8-flags: '--count --show-source --statistics --exclude=Taskify/settings.py'
+        mypy-flags: '--ignore-missing-imports'
+        fail-on-isort: true
+        skip-flake8: false
   build-and-test:
+    needs: check-linting
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -29,17 +41,15 @@ jobs:
         playwright install
     - name: Run Tests
       run: python manage.py test -v 2
-    - name: linting
-      uses: programmingwithalex/pylinter@main
-      with:
-        flake8-flags: '--count --show-source --statistics --exclude=Taskify/settings.py'
-        mypy-flags: '--ignore-missing-imports'
-        fail-on-isort: true
-        skip-flake8: false
+  check-security-issues:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
     - name: Django Security Check
       uses: victoriadrake/django-security-check@v1.1.0
   deploy:
-    needs: build-and-test
+    needs: check-security-issues
     runs-on: ubuntu-latest
     environment: Taskify-enviroment
     steps:
