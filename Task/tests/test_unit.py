@@ -18,7 +18,7 @@ class TaskModelTest(TestCase):
     def test_title_label(self):
         task = Task.objects.get(id=1)
         field_label = task._meta.get_field("title").verbose_name
-        self.assertEqual(field_label, "title_not_good")
+        self.assertEqual(field_label, "title")
 
     def test_complete_default(self):
         task = Task.objects.get(id=1)
